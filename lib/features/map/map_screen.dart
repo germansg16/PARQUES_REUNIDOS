@@ -3,19 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/constants/app_constants.dart';
 import '../../data/providers/map_provider.dart';
+import '../../data/providers/park_provider.dart';
 import '../../data/models/eco_station_model.dart';
 
 class MapScreen extends ConsumerWidget {
   const MapScreen({super.key});
 
-  static const _center = LatLng(40.4180, -3.7030);
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stations = ref.watch(stationsProvider);
+    final park = ref.watch(selectedParkProvider);
+    final List<EcoStationModel> stations =
+        park?.stations ?? ref.watch(stationsProvider);
+
+    // Fallback values when no park is selected
+    final center = park?.center ?? const LatLng(40.4059, -3.7494);
+    final initialZoom = park?.initialZoom ?? 16.0;
+    final minZoom = park?.minZoom ?? 14.0;
+    final bounds = park?.bounds;
 
     return Scaffold(
       backgroundColor: AppColors.bgDark,
@@ -25,49 +32,82 @@ class MapScreen extends ConsumerWidget {
             // ── Top bar ──
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.bgCard,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.navBorder),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.location_on,
-                        color: AppColors.neonGreen, size: 18),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        AppConstants.parkName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                          fontFamily: 'Outfit',
-                        ),
-                      ),
-                    ),
-                    Container(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
+                          horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
-                        color: AppColors.neonGreenGlow,
-                        borderRadius: BorderRadius.circular(20),
+                        color: AppColors.bgCard,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.navBorder),
                       ),
-                      child: const Text(
-                        '5 estaciones',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.neonGreen,
-                          fontFamily: 'Outfit',
-                        ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: AppColors.neonGreen,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              park?.name ?? 'Parque de Atracciones',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                                fontFamily: 'Outfit',
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.neonGreenGlow,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${stations.length} estaciones',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.neonGreen,
+                                fontFamily: 'Outfit',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Change park button
+                  GestureDetector(
+                    onTap: () => context.go('/park-select'),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.bgCard,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.navBorder),
+                      ),
+                      child: const Icon(
+                        Icons.swap_horiz_rounded,
+                        color: AppColors.textSecondary,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1),
             const SizedBox(height: 12),
@@ -79,18 +119,29 @@ class MapScreen extends ConsumerWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: FlutterMap(
-                    options: const MapOptions(
-                      initialCenter: _center,
-                      initialZoom: 16.5,
-                      minZoom: 14,
+                    options: MapOptions(
+                      initialCenter: center,
+                      initialZoom: initialZoom,
+                      minZoom: minZoom,
                       maxZoom: 19,
+                      // ── Equivalent to Leaflet maxBounds ──
+                      // Prevents the camera from panning outside the park area
+                      cameraConstraint: bounds != null
+                          ? CameraConstraint.containCenter(bounds: bounds)
+                          : const CameraConstraint.unconstrained(),
                     ),
                     children: [
+                      // ── Base tile layer (OpenStreetMap) ──
                       TileLayer(
                         urlTemplate:
                             'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         userAgentPackageName: 'com.ecoguardianes.app',
                       ),
+
+                      // ── Park boundary overlay ──
+                      if (bounds != null) _ParkBoundaryLayer(bounds: bounds),
+
+                      // ── Eco-station markers ──
                       MarkerLayer(
                         markers: stations
                             .map((s) => _buildMarker(context, s))
@@ -141,18 +192,19 @@ class MapScreen extends ConsumerWidget {
 
     return Marker(
       point: station.position,
-      width: station.isDoublePoints ? 90 : 52,
-      height: station.isDoublePoints ? 52 : 52,
+      width: station.isDoublePoints ? 100 : 52,
+      height: 52,
       child: GestureDetector(
         onTap: () => _showStationInfo(context, station),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(
-                    station.isDoublePoints ? 20 : 50),
+                borderRadius:
+                    BorderRadius.circular(station.isDoublePoints ? 20 : 50),
                 boxShadow: [
                   BoxShadow(
                     color: color.withValues(alpha: 0.5),
@@ -214,7 +266,8 @@ class MapScreen extends ConsumerWidget {
                     color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.recycling_rounded, color: color, size: 24),
+                  child:
+                      Icon(Icons.recycling_rounded, color: color, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -260,6 +313,34 @@ class MapScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Draws a semi-transparent polygon border around the park bounds.
+/// Uses explicit LatLng corner construction for compatibility with all versions.
+class _ParkBoundaryLayer extends StatelessWidget {
+  final LatLngBounds bounds;
+  const _ParkBoundaryLayer({required this.bounds});
+
+  @override
+  Widget build(BuildContext context) {
+    // Build corners manually: NW, NE, SE, SW
+    final corners = [
+      LatLng(bounds.north, bounds.west), // North-West
+      LatLng(bounds.north, bounds.east), // North-East
+      LatLng(bounds.south, bounds.east), // South-East
+      LatLng(bounds.south, bounds.west), // South-West
+    ];
+    return PolygonLayer(
+      polygons: [
+        Polygon(
+          points: corners,
+          color: AppColors.neonGreen.withValues(alpha: 0.05),
+          borderColor: AppColors.neonGreen.withValues(alpha: 0.5),
+          borderStrokeWidth: 2.5,
+        ),
+      ],
     );
   }
 }
