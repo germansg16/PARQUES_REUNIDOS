@@ -143,10 +143,9 @@ class MapScreen extends ConsumerWidget {
                               points: polygon,
                               // Subtle fill inside park
                               color: AppColors.neonGreen.withValues(alpha: 0.07),
-                              // Bright neon border tracing the real park shape
-                              borderColor:
-                                  AppColors.neonGreen.withValues(alpha: 0.65),
-                              borderStrokeWidth: 2.0,
+                              // Bright blue border tracing the real park shape
+                              borderColor: Colors.blueAccent.withValues(alpha: 0.9),
+                              borderStrokeWidth: 4.0,
                             ),
                           ],
                         ),
