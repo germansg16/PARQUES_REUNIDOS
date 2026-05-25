@@ -12,24 +12,27 @@ import '../../data/models/eco_station_model.dart';
 class MapScreen extends ConsumerWidget {
   const MapScreen({super.key});
 
+  // Fallback center when no park is selected (Madrid)
+  static const _fallbackCenter = LatLng(40.4100, -3.7484);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final park = ref.watch(selectedParkProvider);
     final List<EcoStationModel> stations =
         park?.stations ?? ref.watch(stationsProvider);
 
-    // Fallback values when no park is selected
-    final center = park?.center ?? const LatLng(40.4059, -3.7494);
-    final initialZoom = park?.initialZoom ?? 16.0;
-    final minZoom = park?.minZoom ?? 14.0;
+    final center = park?.center ?? _fallbackCenter;
+    final initialZoom = park?.initialZoom ?? 16.5;
+    final minZoom = park?.minZoom ?? 15.5;
     final bounds = park?.bounds;
+    final polygon = park?.polygon;
 
     return Scaffold(
       backgroundColor: AppColors.bgDark,
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top bar ──
+            // ── Top bar ──────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Row(
@@ -45,18 +48,12 @@ class MapScreen extends ConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.neonGreen,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
+                          // Pulsing green dot
+                          _PulsingDot(),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              park?.name ?? 'Parque de Atracciones',
+                              park?.name ?? 'Selecciona un parque',
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -75,7 +72,7 @@ class MapScreen extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              '${stations.length} estaciones',
+                              '${stations.length} eco-est.',
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -112,7 +109,7 @@ class MapScreen extends ConsumerWidget {
             ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1),
             const SizedBox(height: 12),
 
-            // ── Map ──
+            // ── Map ──────────────────────────────────────────────────────
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -124,24 +121,37 @@ class MapScreen extends ConsumerWidget {
                       initialZoom: initialZoom,
                       minZoom: minZoom,
                       maxZoom: 19,
-                      // ── Equivalent to Leaflet maxBounds ──
-                      // Prevents the camera from panning outside the park area
+                      // ── Camera constraint: equivalent to Leaflet maxBounds ──
+                      // Computed automatically from the polygon bounding box
                       cameraConstraint: bounds != null
                           ? CameraConstraint.containCenter(bounds: bounds)
                           : const CameraConstraint.unconstrained(),
                     ),
                     children: [
-                      // ── Base tile layer (OpenStreetMap) ──
+                      // ── Tile layer: OpenStreetMap ─────────────────────────
                       TileLayer(
                         urlTemplate:
                             'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         userAgentPackageName: 'com.ecoguardianes.app',
                       ),
 
-                      // ── Park boundary overlay ──
-                      if (bounds != null) _ParkBoundaryLayer(bounds: bounds),
+                      // ── Park boundary polygon ─────────────────────────────
+                      if (polygon != null)
+                        PolygonLayer(
+                          polygons: [
+                            Polygon(
+                              points: polygon,
+                              // Subtle fill inside park
+                              color: AppColors.neonGreen.withValues(alpha: 0.07),
+                              // Bright neon border tracing the real park shape
+                              borderColor:
+                                  AppColors.neonGreen.withValues(alpha: 0.65),
+                              borderStrokeWidth: 2.0,
+                            ),
+                          ],
+                        ),
 
-                      // ── Eco-station markers ──
+                      // ── Eco-station markers ───────────────────────────────
                       MarkerLayer(
                         markers: stations
                             .map((s) => _buildMarker(context, s))
@@ -154,26 +164,17 @@ class MapScreen extends ConsumerWidget {
             ).animate(delay: 200.ms).fadeIn(duration: 600.ms),
             const SizedBox(height: 12),
 
-            // ── Legend ──
+            // ── Legend ────────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _LegendItem(
-                    color: AppColors.neonGreen,
-                    label: 'Eco-Estación',
-                  ),
+                  _LegendItem(color: AppColors.neonGreen, label: 'Eco-Estación'),
                   const SizedBox(width: 20),
-                  _LegendItem(
-                    color: AppColors.accentYellow,
-                    label: 'x2 Puntos',
-                  ),
+                  _LegendItem(color: AppColors.accentYellow, label: 'x2 Puntos'),
                   const SizedBox(width: 20),
-                  _LegendItem(
-                    color: AppColors.accentRed,
-                    label: 'Saturada',
-                  ),
+                  _LegendItem(color: AppColors.accentRed, label: 'Saturada'),
                 ],
               ),
             ).animate(delay: 400.ms).fadeIn(),
@@ -199,16 +200,15 @@ class MapScreen extends ConsumerWidget {
         child: Column(
           children: [
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 color: color,
                 borderRadius:
                     BorderRadius.circular(station.isDoublePoints ? 20 : 50),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withValues(alpha: 0.5),
-                    blurRadius: 12,
+                    color: color.withValues(alpha: 0.55),
+                    blurRadius: 14,
                     spreadRadius: 2,
                   ),
                 ],
@@ -266,8 +266,7 @@ class MapScreen extends ConsumerWidget {
                     color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child:
-                      Icon(Icons.recycling_rounded, color: color, size: 24),
+                  child: Icon(Icons.recycling_rounded, color: color, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -300,7 +299,7 @@ class MapScreen extends ConsumerWidget {
             if (station.isDoublePoints)
               _InfoChip(
                 icon: Icons.bolt,
-                label: '¡Puntos x2 activos!',
+                label: '¡Puntos x2 activos ahora!',
                 color: AppColors.accentYellow,
               ),
             if (station.isSaturated)
@@ -317,31 +316,22 @@ class MapScreen extends ConsumerWidget {
   }
 }
 
-/// Draws a semi-transparent polygon border around the park bounds.
-/// Uses explicit LatLng corner construction for compatibility with all versions.
-class _ParkBoundaryLayer extends StatelessWidget {
-  final LatLngBounds bounds;
-  const _ParkBoundaryLayer({required this.bounds});
-
+// ── Pulsing green online indicator ─────────────────────────────────────────
+class _PulsingDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Build corners manually: NW, NE, SE, SW
-    final corners = [
-      LatLng(bounds.north, bounds.west), // North-West
-      LatLng(bounds.north, bounds.east), // North-East
-      LatLng(bounds.south, bounds.east), // South-East
-      LatLng(bounds.south, bounds.west), // South-West
-    ];
-    return PolygonLayer(
-      polygons: [
-        Polygon(
-          points: corners,
-          color: AppColors.neonGreen.withValues(alpha: 0.05),
-          borderColor: AppColors.neonGreen.withValues(alpha: 0.5),
-          borderStrokeWidth: 2.5,
-        ),
-      ],
-    );
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: const BoxDecoration(
+        color: AppColors.neonGreen,
+        shape: BoxShape.circle,
+      ),
+    )
+        .animate(onPlay: (c) => c.repeat())
+        .scaleXY(begin: 1.0, end: 1.6, duration: 900.ms, curve: Curves.easeOut)
+        .then()
+        .scaleXY(begin: 1.6, end: 1.0, duration: 900.ms);
   }
 }
 
