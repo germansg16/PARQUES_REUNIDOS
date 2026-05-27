@@ -19,7 +19,6 @@ class WalletScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ──
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Column(
@@ -47,8 +46,6 @@ class WalletScreen extends ConsumerWidget {
               ),
             ).animate().fadeIn(duration: 400.ms),
             const SizedBox(height: 16),
-
-            // ── Rewards list ──
             Expanded(
               child: rewards.isEmpty
                   ? _EmptyWallet()
@@ -93,12 +90,11 @@ class RewardCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isUsed ? AppColors.bgCard.withValues(alpha: 0.5) : AppColors.bgCard,
+        color:
+            isUsed ? AppColors.bgCard.withValues(alpha: 0.5) : AppColors.bgCard,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isUsed
-              ? AppColors.navBorder
-              : accent.withValues(alpha: 0.35),
+          color: isUsed ? AppColors.navBorder : accent.withValues(alpha: 0.35),
           width: 1,
         ),
         boxShadow: isUsed
@@ -113,7 +109,6 @@ class RewardCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // ── Top row ──
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
             child: Row(
@@ -166,13 +161,12 @@ class RewardCard extends StatelessWidget {
                 ),
                 if (!isUsed)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: accent.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
-                      border:
-                          Border.all(color: accent.withValues(alpha: 0.3)),
+                      border: Border.all(color: accent.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       reward.expiryLabel,
@@ -187,16 +181,12 @@ class RewardCard extends StatelessWidget {
               ],
             ),
           ),
-
-          // ── Divider ──
           Divider(
             height: 1,
             color: isUsed
                 ? AppColors.navBorder.withValues(alpha: 0.3)
                 : AppColors.navBorder,
           ),
-
-          // ── Barcode ──
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -254,8 +244,7 @@ class RewardCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: accent,
                         foregroundColor: Colors.white,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

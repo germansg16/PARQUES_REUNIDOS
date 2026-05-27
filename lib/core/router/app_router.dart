@@ -9,10 +9,8 @@ import '../../features/wallet/wallet_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
-  // Start at the login screen
   initialLocation: '/login',
   routes: [
-    // ── Auth flow (no shell / no bottom nav) ──────────────────────────────
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
@@ -21,8 +19,6 @@ final appRouter = GoRouter(
       path: '/park-select',
       builder: (context, state) => const ParkSelectionScreen(),
     ),
-
-    // ── Main app (with shell / bottom nav) ───────────────────────────────
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),
       routes: [
@@ -52,8 +48,6 @@ final appRouter = GoRouter(
         ),
       ],
     ),
-
-    // ── Scanner: full-screen modal (outside shell) ────────────────────────
     GoRoute(
       path: '/scanner',
       builder: (context, state) => const ScannerScreen(),

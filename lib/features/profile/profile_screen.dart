@@ -24,7 +24,6 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Header ──
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -54,8 +53,6 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ).animate().fadeIn(duration: 500.ms),
               const SizedBox(height: 24),
-
-              // ── Profile Card ──
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -66,7 +63,6 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 child: Column(
                   children: [
-                    // Avatar
                     Stack(
                       alignment: Alignment.bottomRight,
                       children: [
@@ -81,7 +77,8 @@ class ProfileScreen extends ConsumerWidget {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.neonGreen.withValues(alpha: 0.3),
+                                color:
+                                    AppColors.neonGreen.withValues(alpha: 0.3),
                                 blurRadius: 16,
                                 spreadRadius: 2,
                               ),
@@ -152,7 +149,6 @@ class ProfileScreen extends ConsumerWidget {
                       maxExp: user.maxExp,
                     ),
                     const SizedBox(height: 20),
-                    // Stats
                     Row(
                       children: [
                         StatsCard(
@@ -178,8 +174,6 @@ class ProfileScreen extends ConsumerWidget {
                     curve: Curves.easeOutCubic,
                   ),
               const SizedBox(height: 20),
-
-              // ── Impact Stats ──
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -222,8 +216,6 @@ class ProfileScreen extends ConsumerWidget {
                   .fadeIn(duration: 600.ms)
                   .slideY(begin: 0.08, curve: Curves.easeOutCubic),
               const SizedBox(height: 20),
-
-              // ── Mission Card ──
               MissionCard(mission: mission),
             ],
           ),

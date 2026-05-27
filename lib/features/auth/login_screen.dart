@@ -27,7 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    // Simulated auth delay
     await Future.delayed(const Duration(milliseconds: 1200));
     if (mounted) {
       setState(() => _loading = false);
@@ -41,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppColors.bgDark,
       body: Stack(
         children: [
-          // ── Animated background blobs ──
           Positioned(
             top: -80,
             right: -60,
@@ -76,8 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-
-          // ── Main content ──
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -85,8 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 56),
-
-                  // Logo & title
                   Center(
                     child: Column(
                       children: [
@@ -105,7 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.neonGreen.withValues(alpha: 0.4),
+                                color:
+                                    AppColors.neonGreen.withValues(alpha: 0.4),
                                 blurRadius: 28,
                                 spreadRadius: 4,
                               ),
@@ -134,10 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontFamily: 'Outfit',
                             letterSpacing: -0.5,
                           ),
-                        )
-                            .animate(delay: 200.ms)
-                            .fadeIn()
-                            .slideY(begin: 0.15),
+                        ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.15),
                         const SizedBox(height: 6),
                         const Text(
                           'del Parque',
@@ -147,9 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.neonGreen,
                             fontFamily: 'Outfit',
                           ),
-                        )
-                            .animate(delay: 300.ms)
-                            .fadeIn(),
+                        ).animate(delay: 300.ms).fadeIn(),
                         const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -167,16 +157,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontFamily: 'Outfit',
                             ),
                           ),
-                        )
-                            .animate(delay: 400.ms)
-                            .fadeIn(),
+                        ).animate(delay: 400.ms).fadeIn(),
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 48),
-
-                  // Card form
                   Container(
                     padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
@@ -208,8 +193,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 28),
-
-                          // Email field
                           _FieldLabel(label: 'Correo electrónico'),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -235,8 +218,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           const SizedBox(height: 20),
-
-                          // Password field
                           _FieldLabel(label: 'Contraseña'),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -270,8 +251,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           const SizedBox(height: 10),
-
-                          // Forgot password
                           Align(
                             alignment: Alignment.centerRight,
                             child: Text(
@@ -285,8 +264,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 28),
-
-                          // Login button
                           SizedBox(
                             width: double.infinity,
                             height: 52,
@@ -329,10 +306,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       .animate(delay: 500.ms)
                       .fadeIn(duration: 600.ms)
                       .slideY(begin: 0.08, curve: Curves.easeOutCubic),
-
                   const SizedBox(height: 24),
-
-                  // Register row
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -360,7 +334,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ).animate(delay: 700.ms).fadeIn(),
-
                   const SizedBox(height: 40),
                 ],
               ),
@@ -392,8 +365,7 @@ class _LoginScreenState extends State<LoginScreen> {
           : null,
       filled: true,
       fillColor: AppColors.bgCardLight,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -404,18 +376,15 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide:
-            const BorderSide(color: AppColors.neonGreen, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.neonGreen, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide:
-            const BorderSide(color: AppColors.accentRed, width: 1),
+        borderSide: const BorderSide(color: AppColors.accentRed, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide:
-            const BorderSide(color: AppColors.accentRed, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.accentRed, width: 1.5),
       ),
       errorStyle: const TextStyle(
         fontFamily: 'Outfit',

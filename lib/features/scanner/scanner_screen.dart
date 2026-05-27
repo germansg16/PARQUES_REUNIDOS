@@ -46,13 +46,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     HapticFeedback.heavyImpact();
     _controller?.stop();
 
-    // Update user stats
     ref.read(userProvider.notifier).addRecycle();
 
-    // Show overlay on wheel screen immediately
     ref.read(scanSuccessOverlayProvider.notifier).state = true;
 
-    // Navigate to wheel with the overlay showing — instant "pum!" transition
     context.pushReplacement('/wheel');
   }
 
@@ -63,7 +60,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ── Camera ──
           MobileScanner(
             controller: _controller,
             onDetect: (capture) {
@@ -73,13 +69,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               }
             },
           ),
-
-          // ── Dark overlay with cutout ──
           CustomPaint(
             painter: _ScanOverlayPainter(),
           ),
-
-          // ── Scan line animation ──
           Positioned(
             top: MediaQuery.of(context).size.height * 0.38,
             left: MediaQuery.of(context).size.width * 0.15,
@@ -107,8 +99,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               ),
             ),
           ),
-
-          // ── Top bar ──
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -146,8 +136,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               ),
             ),
           ),
-
-          // ── Center label ──
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -167,8 +155,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               ],
             ),
           ),
-
-          // ── Bottom hint + simulate button ──
           Positioned(
             bottom: 0,
             left: 0,
@@ -187,7 +173,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Demo button for pitch video
                     OutlinedButton(
                       onPressed: () => _onScanSuccess('ECO-STATION-007-X2'),
                       style: OutlinedButton.styleFrom(
@@ -211,7 +196,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                   ],
                 ),
               ),
-            ).animate().fadeIn(duration: 600.ms, delay: 400.ms).slideY(begin: 0.2),
+            )
+                .animate()
+                .fadeIn(duration: 600.ms, delay: 400.ms)
+                .slideY(begin: 0.2),
           ),
         ],
       ),
@@ -219,7 +207,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   }
 }
 
-/// Paints a semi-transparent overlay with a square cutout in the centre
 class _ScanOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -227,8 +214,7 @@ class _ScanOverlayPainter extends CustomPainter {
     const cutoutSize = 240.0;
     final left = (size.width - cutoutSize) / 2;
     final top = size.height * 0.28;
-    final cutout =
-        RRect.fromRectAndRadius(
+    final cutout = RRect.fromRectAndRadius(
       Rect.fromLTWH(left, top, cutoutSize, cutoutSize),
       const Radius.circular(16),
     );
@@ -240,7 +226,6 @@ class _ScanOverlayPainter extends CustomPainter {
 
     canvas.drawPath(path, paint);
 
-    // Corner brackets
     final bracketPaint = Paint()
       ..color = AppColors.neonGreen
       ..strokeWidth = 3

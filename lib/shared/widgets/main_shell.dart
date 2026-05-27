@@ -25,7 +25,6 @@ class MainShell extends StatelessWidget {
         context.go('/map');
         break;
       case 2:
-        // Central button → scanner (full screen)
         HapticFeedback.mediumImpact();
         context.push('/scanner');
         break;
@@ -85,7 +84,6 @@ class _EcoBottomNav extends StatelessWidget {
             isActive: currentIndex == 1,
             onTap: () => onTap(1),
           ),
-          // ── Central FAB button (scanner) ──
           GestureDetector(
             onTap: () => onTap(2),
             child: Container(

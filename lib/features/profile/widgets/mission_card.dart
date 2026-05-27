@@ -84,8 +84,7 @@ class MissionCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.neonGreen,
               foregroundColor: AppColors.bgDark,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),

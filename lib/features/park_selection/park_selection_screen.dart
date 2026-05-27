@@ -30,8 +30,8 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
     return ParkCatalogue.all.where((p) {
       final matchName = p.name.toLowerCase().contains(q) ||
           p.country.toLowerCase().contains(q);
-      final matchCountry = _countryFilter == 'Todos' ||
-          p.country.contains(_countryFilter);
+      final matchCountry =
+          _countryFilter == 'Todos' || p.country.contains(_countryFilter);
       return matchName && matchCountry;
     }).toList();
   }
@@ -39,7 +39,6 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
   List<String> get _countries {
     final set = <String>{'Todos'};
     for (final p in ParkCatalogue.all) {
-      // Extract flag + country name without city
       final parts = p.country.split(',');
       if (parts.length >= 2) {
         set.add(parts.last.trim());
@@ -61,7 +60,6 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
       backgroundColor: AppColors.bgDark,
       body: Stack(
         children: [
-          // Background glow
           Positioned(
             top: -60,
             left: -80,
@@ -79,12 +77,10 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
               ),
             ),
           ),
-
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Header ──
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
                   child: Column(
@@ -100,8 +96,7 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
                               decoration: BoxDecoration(
                                 color: AppColors.bgCard,
                                 shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: AppColors.navBorder),
+                                border: Border.all(color: AppColors.navBorder),
                               ),
                               child: const Icon(
                                 Icons.arrow_back_ios_new_rounded,
@@ -124,8 +119,7 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
                             child: Row(
                               children: [
                                 const Icon(Icons.eco_rounded,
-                                    size: 14,
-                                    color: AppColors.neonGreen),
+                                    size: 14, color: AppColors.neonGreen),
                                 const SizedBox(width: 6),
                                 const Text(
                                   'Parques Reunidos',
@@ -163,8 +157,6 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
                         ),
                       ).animate(delay: 150.ms).fadeIn(),
                       const SizedBox(height: 20),
-
-                      // ── Search bar ──
                       Container(
                         height: 48,
                         decoration: BoxDecoration(
@@ -190,28 +182,22 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
                             prefixIcon: Icon(Icons.search_rounded,
                                 color: AppColors.textSecondary, size: 20),
                             border: InputBorder.none,
-                            contentPadding:
-                                EdgeInsets.symmetric(vertical: 14),
+                            contentPadding: EdgeInsets.symmetric(vertical: 14),
                           ),
                         ),
                       ).animate(delay: 250.ms).fadeIn().slideY(begin: 0.08),
-
                       const SizedBox(height: 14),
-
-                      // ── Country filter chips ──
                       SizedBox(
                         height: 34,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: _countries.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(width: 8),
+                          separatorBuilder: (_, __) => const SizedBox(width: 8),
                           itemBuilder: (_, i) {
                             final c = _countries[i];
                             final isActive = _countryFilter == c;
                             return GestureDetector(
-                              onTap: () =>
-                                  setState(() => _countryFilter = c),
+                              onTap: () => setState(() => _countryFilter = c),
                               child: AnimatedContainer(
                                 duration: 200.ms,
                                 padding: const EdgeInsets.symmetric(
@@ -247,16 +233,13 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
                     ],
                   ),
                 ),
-
-                // ── Park list ──
                 Expanded(
                   child: parks.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text('🔍',
-                                  style: TextStyle(fontSize: 48)),
+                              const Text('🔍', style: TextStyle(fontSize: 48)),
                               const SizedBox(height: 12),
                               Text(
                                 'No se encontró "$_query"',
@@ -270,8 +253,7 @@ class _ParkSelectionScreenState extends ConsumerState<ParkSelectionScreen> {
                           ),
                         )
                       : ListView.separated(
-                          padding:
-                              const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
                           itemCount: parks.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 12),
@@ -323,15 +305,14 @@ class _ParkCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Emoji badge
             Container(
               width: 58,
               height: 58,
               decoration: BoxDecoration(
                 color: park.accentColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                    color: park.accentColor.withValues(alpha: 0.25)),
+                border:
+                    Border.all(color: park.accentColor.withValues(alpha: 0.25)),
               ),
               child: Center(
                 child: Text(
@@ -341,8 +322,6 @@ class _ParkCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-
-            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,8 +359,6 @@ class _ParkCard extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Arrow
             Container(
               width: 36,
               height: 36,

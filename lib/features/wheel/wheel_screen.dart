@@ -63,7 +63,6 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
     });
     _selected.add(rnd);
 
-    // After wheel finishes, show result
     Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
       HapticFeedback.heavyImpact();
@@ -73,7 +72,6 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
       });
       _confettiController.forward(from: 0);
 
-      // Add reward to wallet
       final segment = _segments[rnd];
       if (segment.rewardType != RewardType.points &&
           segment.rewardType != RewardType.discount) {
@@ -102,19 +100,12 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
       body: SafeArea(
         child: Stack(
           children: [
-            // ── Main wheel content ──
             _buildWheelContent(context),
-
-            // ── "¡Bandeja Reciclada!" overlay — shows right on arrival ──
             if (showOverlay) _buildSuccessOverlay(context),
-
-            // ── Confetti ──
             if (_wonIndex != null)
               IgnorePointer(
                 child: _ConfettiLayer(controller: _confettiController),
               ),
-
-            // ── Prize result modal ──
             if (_wonIndex != null && !_isSpinning)
               _buildPrizeModal(context, _wonIndex!),
           ],
@@ -146,8 +137,6 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
           ),
         ).animate(delay: 200.ms).fadeIn(),
         const SizedBox(height: 32),
-
-        // ── Fortune Wheel ──
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -201,8 +190,6 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
               duration: 700.ms,
             ),
         const SizedBox(height: 24),
-
-        // ── GIRAR button ──
         GestureDetector(
           onTap: _spin,
           child: AnimatedContainer(
@@ -252,7 +239,6 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
     );
   }
 
-  /// Overlay that appears instantly when arriving from scanner
   Widget _buildSuccessOverlay(BuildContext context) {
     return Positioned.fill(
       child: GestureDetector(
@@ -264,7 +250,6 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Green check icon
               Container(
                 width: 80,
                 height: 80,
@@ -348,8 +333,7 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
         padding: const EdgeInsets.all(28),
         decoration: BoxDecoration(
           color: AppColors.bgCard,
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(28)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           border: Border.all(color: color.withValues(alpha: 0.3)),
           boxShadow: [
             BoxShadow(
@@ -378,7 +362,8 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
-                border: Border.all(color: color.withValues(alpha: 0.4), width: 2),
+                border:
+                    Border.all(color: color.withValues(alpha: 0.4), width: 2),
                 boxShadow: [
                   BoxShadow(
                     color: color.withValues(alpha: 0.3),
@@ -455,7 +440,6 @@ class _WheelScreenState extends ConsumerState<WheelScreen>
   }
 }
 
-/// Simple confetti burst using random positioned dots
 class _ConfettiLayer extends StatelessWidget {
   final AnimationController controller;
   const _ConfettiLayer({required this.controller});
@@ -500,8 +484,8 @@ class _ConfettiLayer extends StatelessWidget {
                     height: rnd.nextDouble() * 8 + 6,
                     decoration: BoxDecoration(
                       color: color,
-                      borderRadius: BorderRadius.circular(
-                          rnd.nextBool() ? 50 : 2),
+                      borderRadius:
+                          BorderRadius.circular(rnd.nextBool() ? 50 : 2),
                     ),
                   ),
                 ),

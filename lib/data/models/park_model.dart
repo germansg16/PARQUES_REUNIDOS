@@ -11,8 +11,6 @@ class ParkModel {
   final String emoji;
   final Color accentColor;
   final LatLng center;
-  /// Real polygon from OpenStreetMap (OSM way/relation geojson).
-  /// GeoJSON [lng, lat] pairs converted to LatLng(lat, lng).
   final List<LatLng> polygon;
   final double initialZoom;
   final double minZoom;
@@ -32,7 +30,6 @@ class ParkModel {
     required this.stations,
   });
 
-  /// Tight LatLngBounds computed automatically from the real OSM polygon.
   LatLngBounds get bounds {
     double minLat = polygon.first.latitude;
     double maxLat = polygon.first.latitude;
@@ -52,10 +49,6 @@ class ParkModel {
   }
 }
 
-/// ──────────────────────────────────────────────────────────────────────────
-/// 3 parks with polygons sourced directly from OpenStreetMap via Nominatim.
-/// GeoJSON coordinates are [lng, lat] → converted to LatLng(lat, lng).
-/// ──────────────────────────────────────────────────────────────────────────
 class ParkCatalogue {
   ParkCatalogue._();
 
@@ -65,10 +58,6 @@ class ParkCatalogue {
         _mirabilandia,
       ];
 
-  // ── 1. Parque de Atracciones de Madrid ─────────────────────────────────
-  // OSM: way/6176205  |  Nominatim place_id: 294693032
-  // Center (OSM lat/lon): 40.4116032, -3.7499124
-  // Polygon: 28 nodes from OSM geojson (last = first, so we drop it)
   static final _parqueDeAtracciones = ParkModel(
     id: 'parque-de-atracciones-madrid',
     name: 'Parque de Atracciones de Madrid',
@@ -146,10 +135,6 @@ class ParkCatalogue {
     ],
   );
 
-  // ── 2. Parque Warner Madrid ─────────────────────────────────────────────
-  // OSM: way/28092106  |  Nominatim place_id: 289867416
-  // Center (OSM lat/lon): 40.2294449, -3.5928263
-  // Polygon: 54 nodes from OSM geojson
   static final _warnerMadrid = ParkModel(
     id: 'parque-warner-madrid',
     name: 'Parque Warner Madrid',
@@ -253,10 +238,6 @@ class ParkCatalogue {
     ],
   );
 
-  // ── 3. Mirabilandia ─────────────────────────────────────────────────────
-  // OSM: way/361037743  |  Nominatim place_id: 78951857
-  // Center (OSM lat/lon): 44.3377141, 12.2626104
-  // Polygon: 24 nodes from OSM geojson
   static final _mirabilandia = ParkModel(
     id: 'mirabilandia',
     name: 'Mirabilandia',

@@ -15,8 +15,6 @@ final wheelStateProvider =
   (ref) => WheelStateNotifier(),
 );
 
-/// Index of the winning segment (0-5)
 final wheelResultIndexProvider = StateProvider<int>((ref) => 0);
 
-/// Whether the scan success overlay is showing
 final scanSuccessOverlayProvider = StateProvider<bool>((ref) => false);
